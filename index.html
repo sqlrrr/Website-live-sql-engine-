@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SQL ENGINE | Autonomous Intelligence Hub</title>
+    <title>SQL ENGINE | Autonomous AI Terminal</title>
     
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -16,114 +16,96 @@
             --accent: #00e5ff;
             --green: #00ff88;
             --red: #ff3366;
+            --gold: #ffcc00;
             --border: #1f2937;
             --text-dim: #9ca3af;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'JetBrains Mono', monospace; }
-        body { background: var(--bg-base); color: #fff; display: flex; height: 100vh; overflow: hidden; }
+        body { background: var(--bg-base); color: #fff; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
 
-        /* Left Navigation Bar */
-        .sidebar { width: 60px; background: var(--panel-bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 20px 0; gap: 25px; }
-        .nav-icon { color: var(--text-dim); cursor: pointer; transition: 0.2s; font-size: 1.2rem; }
-        .nav-icon:hover, .nav-icon.active { color: var(--accent); }
+        /* Top Bar */
+        header { 
+            height: 50px; background: var(--panel-bg); border-bottom: 1px solid var(--border); 
+            display: flex; align-items: center; padding: 0 20px; justify-content: space-between;
+        }
+        .logo { font-size: 18px; font-weight: 800; color: var(--accent); letter-spacing: 2px; }
+        .node-status { font-size: 10px; display: flex; align-items: center; gap: 8px; color: var(--green); }
 
-        /* Main Workspace */
-        .workspace { flex: 1; display: grid; grid-template-columns: 300px 1fr 350px; grid-template-rows: 60px 1fr 200px; gap: 8px; padding: 8px; }
+        /* Dashboard Grid */
+        .dashboard { flex: 1; display: grid; grid-template-columns: 320px 1fr 350px; grid-template-rows: 1fr 220px; gap: 8px; padding: 8px; }
+        .panel { background: var(--panel-bg); border: 1px solid var(--border); border-radius: 4px; padding: 15px; overflow: hidden; display: flex; flex-direction: column; }
 
-        /* Top Macro Bar */
-        .macro-bar { grid-column: 1 / 4; background: var(--panel-bg); border: 1px solid var(--border); border-radius: 4px; display: flex; align-items: center; padding: 0 20px; gap: 30px; }
-        .macro-item { font-size: 12px; display: flex; gap: 8px; }
-        .macro-label { color: var(--text-dim); }
+        /* Signal Display */
+        .ai-core { text-align: center; border: 1px dashed var(--accent); padding: 20px; border-radius: 8px; margin-bottom: 15px; }
+        #ai-action { font-size: 38px; font-weight: 900; margin: 10px 0; }
+        .buy-color { color: var(--green); text-shadow: 0 0 15px var(--green); }
+        .sell-color { color: var(--red); text-shadow: 0 0 15px var(--red); }
+        .hold-color { color: var(--gold); text-shadow: 0 0 15px var(--gold); }
 
-        /* Left Panel: Market & Orderbook */
-        .left-panel { grid-row: 2 / 4; display: flex; flex-direction: column; gap: 8px; }
-        .orderbook { flex: 1; background: var(--panel-bg); border: 1px solid var(--border); padding: 10px; font-size: 11px; }
-        .ob-row { display: flex; justify-content: space-between; padding: 2px 0; }
+        /* Stats Table */
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: auto; }
+        .stat-box { background: #161b22; padding: 10px; border-radius: 4px; border: 1px solid var(--border); }
+        .stat-label { font-size: 10px; color: var(--text-dim); text-transform: uppercase; }
+        .stat-val { font-size: 14px; font-weight: bold; margin-top: 4px; }
 
-        /* Center Panel: Main Chart & Signals */
-        .center-panel { display: flex; flex-direction: column; gap: 8px; }
-        .chart-window { flex: 1; background: var(--panel-bg); border: 1px solid var(--border); position: relative; overflow: hidden; }
-        .ai-overlay { position: absolute; top: 15px; left: 15px; background: rgba(0,0,0,0.8); border: 1px solid var(--accent); padding: 15px; border-radius: 4px; z-index: 10; }
+        /* Whale Feed */
+        #whale-alerts { font-size: 11px; overflow-y: auto; flex: 1; }
+        .alert-item { padding: 8px 0; border-bottom: 1px solid #1f2937; color: var(--text-dim); }
+        .alert-item b { color: var(--gold); }
 
-        /* Right Panel: Intelligence & Social Sentiment */
-        .right-panel { grid-row: 2 / 4; display: flex; flex-direction: column; gap: 8px; }
-        .intel-card { background: var(--panel-bg); border: 1px solid var(--border); padding: 15px; }
-        .sentiment-meter { height: 10px; background: #1f2937; border-radius: 5px; margin: 10px 0; overflow: hidden; }
-        .sentiment-fill { height: 100%; transition: 0.5s; }
+        /* Terminal Logs */
+        .terminal { background: #000; flex: 1; font-size: 11px; color: var(--green); padding: 10px; overflow-y: auto; border-radius: 4px; }
+        .term-entry { margin-bottom: 4px; }
+        .term-time { color: #555; }
 
-        /* Bottom Terminal */
-        .bottom-terminal { grid-column: 2 / 3; background: #000; border: 1px solid var(--border); padding: 10px; font-size: 11px; color: var(--green); overflow-y: auto; }
+        /* Chart */
+        #chart-container { flex: 1; min-height: 200px; }
 
-        /* Helper Classes */
-        .tag { font-size: 9px; padding: 2px 6px; border-radius: 3px; background: #1f2937; color: var(--accent); }
-        .glow-text { text-shadow: 0 0 10px var(--accent); }
     </style>
 </head>
 <body>
 
-    <nav class="sidebar">
-        <i class="fas fa-microchip nav-icon active"></i>
-        <i class="fas fa-chart-line nav-icon"></i>
-        <i class="fas fa-network-wired nav-icon"></i>
-        <i class="fas fa-shield-halved nav-icon"></i>
-        <i class="fas fa-gear nav-icon"></i>
-    </nav>
+    <header>
+        <div class="logo"><i class="fas fa-microchip"></i> SQL ENGINE <span style="font-size: 10px; opacity: 0.5;">PRO v2.5</span></div>
+        <div id="sync-status" class="node-status"><i class="fas fa-circle"></i> NODE: CONNECTING...</div>
+    </header>
 
-    <div class="workspace">
-        <div class="macro-bar">
-            <div class="macro-item"><span class="macro-label">DXY</span><span id="dxy-val">102.45</span></div>
-            <div class="macro-item"><span class="macro-label">BTC GAS</span><span id="gas-val" style="color:var(--green)">18 Gwei</span></div>
-            <div class="macro-item"><span class="macro-label">DOMINANCE</span><span>52.1%</span></div>
-            <div class="macro-item"><span class="macro-label">GLOBAL MKT CAP</span><span>$2.41T</span></div>
-            <div style="margin-left: auto;" class="tag glow-text">NODE STATUS: OPTIMIZED</div>
-        </div>
-
-        <div class="left-panel">
-            <div class="orderbook">
-                <div style="margin-bottom:10px; border-bottom:1px solid #333">LIQUIDITY DEPTH (BINANCE)</div>
-                <div id="ask-wall" style="color:var(--red)"></div>
-                <div id="price-current" style="font-size: 20px; text-align: center; margin: 10px 0;">--</div>
-                <div id="bid-wall" style="color:var(--green)"></div>
+    <div class="dashboard">
+        <div class="panel">
+            <div class="ai-core">
+                <div style="font-size: 10px; color: var(--text-dim);">AI CONSENSUS DECISION</div>
+                <div id="ai-action" class="hold-color">SYNCING...</div>
+                <div id="ai-conf" style="font-size: 12px;">Confidence: 0%</div>
             </div>
-            <div class="intel-card">
-                <div style="font-size:12px; margin-bottom:10px;">TOP 100 WALLETS FLOW</div>
-                <canvas id="whaleChart" height="150"></canvas>
+
+            <div class="stat-grid">
+                <div class="stat-box"><div class="stat-label">BTC Price</div><div id="btc-price" class="stat-val">$0.00</div></div>
+                <div class="stat-box"><div class="stat-label">24h Change</div><div id="btc-change" class="stat-val">0.00%</div></div>
+                <div class="stat-box"><div class="stat-label">Sentiment</div><div id="sentiment-val" class="stat-val">Neutral</div></div>
+                <div class="stat-box"><div class="stat-label">DXY Index</div><div id="dxy-val" class="stat-val">102.40</div></div>
             </div>
         </div>
 
-        <div class="center-panel">
-            <div class="chart-window" id="mainChartContainer">
-                <div class="ai-overlay">
-                    <div style="font-size:10px; color:var(--text-dim)">AI CONSENSUS</div>
-                    <div id="final-decision" style="font-size:24px; font-weight:bold;">ANALYZING...</div>
-                    <div id="conf-meter" style="font-size:12px; margin-top:5px;">Confidence: 0%</div>
-                </div>
+        <div class="panel">
+            <div style="font-size: 12px; margin-bottom: 10px; color: var(--accent);">REAL-TIME LIQUIDITY FLOW</div>
+            <div id="chart-container"></div>
+        </div>
+
+        <div class="panel">
+            <div style="font-size: 12px; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 5px;">
+                <i class="fas fa-fish"></i> WHALE ALERTS (ETH/SOL/BSC)
+            </div>
+            <div id="whale-alerts">
+                <div class="alert-item">Scanning 18+ APIs for large movements...</div>
             </div>
         </div>
 
-        <div class="bottom-terminal" id="terminal">
-            <div>[SYSTEM] SQL Engine Booting...</div>
-            <div>[SYSTEM] Establishing WebSocket connection to Global Market Data...</div>
-            <div>[SYSTEM] Reading Bitcoin Bitnodes... <span style="color:var(--accent)">DONE</span></div>
-        </div>
-
-        <div class="right-panel">
-            <div class="intel-card">
-                <div style="font-size:12px;">GLOBAL SENTIMENT (NLP)</div>
-                <div class="sentiment-meter"><div id="sent-fill" class="sentiment-fill" style="width:50%; background:var(--accent)"></div></div>
-                <div style="display:flex; justify-content:space-between; font-size:10px;">
-                    <span>FEAR</span><span>NEUTRAL</span><span>GREED</span>
-                </div>
-            </div>
-            <div class="intel-card" style="flex:1;">
-                <div style="font-size:12px; margin-bottom:10px;">WHALE ALERTS (LIVE)</div>
-                <div id="whale-feed" style="font-size:11px; line-height:1.6;">
-                    <div style="color:var(--gold)">Searching for on-chain anomalies...</div>
-                </div>
-            </div>
-            <div class="intel-card">
-                <button id="ai-toggle" style="width:100%; padding:10px; background:transparent; border:1px solid var(--accent); color:var(--accent); cursor:pointer;">MANUAL INTERVENTION ON</button>
+        <div class="panel" style="grid-column: 1 / 4;">
+            <div style="font-size: 11px; margin-bottom: 5px; color: var(--text-dim);">SYSTEM EXECUTION LOGS</div>
+            <div class="terminal" id="terminal-logs">
+                <div class="term-entry">> Initializing SQL Engine Core...</div>
+                <div class="term-entry">> Loading Firebase Realtime Bridge...</div>
             </div>
         </div>
     </div>
@@ -132,6 +114,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
         import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js";
 
+        // Fixed Config with DatabaseURL
         const firebaseConfig = {
             apiKey: "AIzaSyCVn3r1NcjW1OcSxBfWMSFcJ_db-i7p6uc",
             authDomain: "sqlrrr.firebaseapp.com",
@@ -139,47 +122,70 @@
             storageBucket: "sqlrrr.firebasestorage.app",
             messagingSenderId: "605955318342",
             appId: "1:605955318342:web:7f097ac1b565c5a3b16047",
-            measurementId: "G-R1NFCH5C8V"
+            measurementId: "G-R1NFCH5C8V",
+            databaseURL: "https://sqlrrr-default-rtdb.firebaseio.com" // CRITICAL FIX
         };
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // Chart Init
-        const chart = LightweightCharts.createChart(document.getElementById('mainChartContainer'), {
+        // --- CHART SETUP ---
+        const chartContainer = document.getElementById('chart-container');
+        const chart = LightweightCharts.createChart(chartContainer, {
             layout: { background: { color: '#0d1117' }, textColor: '#d1d4dc' },
             grid: { vertLines: { color: '#1f2937' }, horzLines: { color: '#1f2937' } },
+            timeScale: { timeVisible: true, secondsVisible: false }
         });
-        const candleSeries = chart.addCandlestickSeries();
+        const lineSeries = chart.addLineSeries({ color: '#00e5ff', lineWidth: 2 });
 
-        // Listen for AI Engine Data
-        const engineRef = ref(db, 'sql_engine_live');
-        onValue(engineRef, (snapshot) => {
+        // --- DATA LISTENER ---
+        const liveRef = ref(db, 'sql_engine_live');
+        
+        onValue(liveRef, (snapshot) => {
             const data = snapshot.val();
             if (data) {
-                updateInterface(data);
+                updateUI(data);
+                document.getElementById('sync-status').innerHTML = '<i class="fas fa-circle"></i> NODE: LIVE SYNCED';
+                document.getElementById('sync-status').style.color = '#00ff88';
+            } else {
+                addLog("System", "Connected to Firebase, but no data found in 'sql_engine_live'");
             }
         });
 
-        function updateInterface(data) {
-            // Update Signal
-            const decBox = document.getElementById('final-decision');
-            decBox.innerText = data.ai.action;
-            decBox.style.color = data.ai.action === 'BUY' ? 'var(--green)' : 'var(--red)';
+        function updateUI(data) {
+            // 1. Update AI Action
+            const actionEl = document.getElementById('ai-action');
+            actionEl.innerText = data.ai.action;
+            actionEl.className = data.ai.action === 'BUY' ? 'buy-color' : (data.ai.action === 'SELL' ? 'sell-color' : 'hold-color');
             
-            document.getElementById('conf-meter').innerText = `Confidence: ${(data.ai.confidence * 100).toFixed(2)}%`;
-            document.getElementById('price-current').innerText = `$${parseFloat(data.market.price).toLocaleString()}`;
-            
-            // Terminal Log
-            const term = document.getElementById('terminal');
-            const entry = document.createElement('div');
-            entry.innerHTML = `[${new Date().toLocaleTimeString()}] AI Engine Decision: <span style="color:var(--accent)">${data.ai.action}</span> (Confidence: ${data.ai.confidence})`;
-            term.prepend(entry);
+            document.getElementById('ai-conf').innerText = `Confidence: ${(data.ai.confidence * 100).toFixed(1)}%`;
 
-            // Sentiment meter
-            document.getElementById('sent-fill').style.width = (data.ai.sentiment || 50) + '%';
+            // 2. Update Market Stats
+            document.getElementById('btc-price').innerText = `$${parseFloat(data.market.price).toLocaleString()}`;
+            document.getElementById('btc-change').innerText = `${data.market.change.toFixed(2)}%`;
+            document.getElementById('btc-change').style.color = data.market.change >= 0 ? '#00ff88' : '#ff3366';
+            
+            // 3. Update Whale Alerts
+            if(data.whales) {
+                const whaleList = document.getElementById('whale-alerts');
+                const whaleHTML = `<div class="alert-item"><b>[WHALE]</b> Movement Detected | Status: ${data.whales.whale_status} | TX: ${data.whales.large_tx}</div>`;
+                whaleList.insertAdjacentHTML('afterbegin', whaleHTML);
+            }
+
+            // 4. Update Terminal
+            addLog("AI_ENGINE", `Decision: ${data.ai.action} | Conf: ${data.ai.confidence} | Sync: ${data.system.last_update}`);
+
+            // 5. Update Chart
+            lineSeries.update({ time: Math.floor(Date.now() / 1000), value: data.market.price });
+        }
+
+        function addLog(source, msg) {
+            const logs = document.getElementById('terminal-logs');
+            const time = new Date().toLocaleTimeString();
+            const entry = `<div class="term-entry"><span class="term-time">[${time}]</span> <span style="color:#00e5ff">[${source}]</span> ${msg}</div>`;
+            logs.insertAdjacentHTML('afterbegin', entry);
         }
 
     </script>
 </body>
-</html>
+    </html>
